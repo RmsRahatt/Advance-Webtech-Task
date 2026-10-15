@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto.js';
 import { UpdateCourseDto } from './dto/update-course.dto.js';
+import 'multer';
 
 @Injectable()
 export class CourseService {
@@ -37,7 +38,7 @@ export class CourseService {
     return {
       message: 'Course patched successfully',
       id: id,
-      updatedFields: Object.keys(dto),
+      updatedFields: ['name', 'credits'],
     };
   }
 
@@ -48,7 +49,7 @@ export class CourseService {
     };
   }
 
-  uploadCourseMaterial(id: string, file: any) {
+  uploadCourseMaterial(id: string, file: Express.Multer.File) {
     return {
       message: 'Material uploaded successfully',
       courseId: id,
