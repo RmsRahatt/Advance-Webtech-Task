@@ -1,48 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCourseDto } from './dtos/create-course.dto.js';
-import { UpdateCourseDto } from './dtos/update-course.dto.js';
+import { CreateCourseDto } from './dto/create-course.dto.js';
+import { UpdateCourseDto } from './dto/update-course.dto.js';
 
 @Injectable()
 export class CourseService {
   getAllCourses() {
-    return { message: 'Get All Courses from Service' };
+    return {
+      message: 'All courses fetched successfully',
+      data: [],
+    };
   }
 
   getCourseById(id: string) {
-    return { message: `Get Course with ID: ${id} from Service` };
-  }
-
-  createCourse(course: CreateCourseDto) {
     return {
-      message: 'Create Course from Service',
-      data: course,
+      message: 'Course fetched successfully',
+      id: id,
     };
   }
 
-  updateCourse(id: string, course: UpdateCourseDto) {
+  createCourse(dto: CreateCourseDto) {
     return {
-      message: `Update Course ${id} - from Service`,
-      data: course,
+      message: 'Course created successfully',
+      data: dto,
     };
   }
 
-  patchCourse(id: string, course: UpdateCourseDto) {
+  updateCourse(id: string, dto: UpdateCourseDto) {
     return {
-      message: `Patch Course ${id} from Service`,
-      data: course,
+      message: 'Course updated successfully',
+      id: id,
+      data: dto,
+    };
+  }
+
+  patchCourse(id: string, dto: UpdateCourseDto) {
+    return {
+      message: 'Course patched successfully',
+      id: id,
+      updatedFields: Object.keys(dto),
     };
   }
 
   deleteCourse(id: string) {
-    return { message: `Delete Course ${id} from Service` };
+    return {
+      message: 'Course deleted successfully',
+      id: id,
+    };
   }
-  
 
   uploadCourseMaterial(id: string, file: any) {
     return {
-      message: `File uploaded successfully for course ${id}`,
+      message: 'Material uploaded successfully',
+      courseId: id,
       filename: file.originalname,
-      size: file.size,
+      path: `uploads/${file.originalname}`,
     };
   }
 }
