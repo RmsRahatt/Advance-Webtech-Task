@@ -53,4 +53,25 @@ export class ProductsService {
     return { message: 'Product deleted', id };
   }
 
- 
+  async findByCategory(category: string) {
+    const data = await this.productsRepo.find({ where: { category } });
+    return { message: `Products in category: ${category}`, count: data.length, data };
+  }
+
+  async search(keyword: string) {
+    const data = await this.productsRepo.find({
+      where: { name: ILike(`%${keyword}%`) },
+    });
+    return { message: 'Search results', count: data.length, data };
+  }
+
+  async toggleActive(id: number) {
+    const response = await this.findOne(id);
+    const product = response.data;
+
+    product.isActive = !product.isActive;
+    await this.productsRepo.save(product);
+
+    return { message: 'Product active status toggled', data: product };
+  }
+}
