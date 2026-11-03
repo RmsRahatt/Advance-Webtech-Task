@@ -1,4 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, ILike } from 'typeorm';
+import { Products } from './entities/products.entity.js';
+import { CreateProductDto } from './dto/create-product.dto.js';
+import { UpdateProductDto } from './dto/update-product.dto.js';
+import { PartialUpdateProductDto } from './dto/partial-update-product.dto.js';
 
 @Injectable()
-export class ProductsService {}
+export class ProductsService {
+  constructor(
+    @InjectRepository(Products)
+    private productsRepo: Repository<Products>,
+  ) {}
+
+  async create(dto: CreateProductDto) {
+    const product = await this.productsRepo.save(dto);
+    return { message: 'Product created successfully', data: product };
+  }
+
+  async findAll() {
+    const data = await this.productsRepo.find({
+      order: { createdAt: 'DESC' },
+    });
+    return { message: 'All products fetched', count: data.length, data };
+  }
+
+  async findOne(id: number) {
+    const product = await this.productsRepo.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException(`Product with id ${id} not found`);
+    }
+    return { message: 'Product found', data: product };
+  }
+
+  async update(id: number, dto: PartialUpdateProductDto) {
+    await this.findOne(id);
+    await this.productsRepo.update(id, dto);
+    const updatedProduct = await this.productsRepo.findOne({ where: { id } });
+    return { message: 'Product partially updated', data: updatedProduct };
+  }
+
+  async replace(id: number, dto: UpdateProductDto) {
+    await this.findOne(id); 
+    await this.productsRepo.update(id, dto);
+    const updatedProduct = await this.productsRepo.findOne({ where: { id } });
+    return { message: 'Product fully replaced', data: updatedProduct };
+  }
+
+  async remove(id: number) {
+    await this.findOne(id); 
+    await this.productsRepo.delete(id);
+    return { message: 'Product deleted', id };
+  }
+
+ 
